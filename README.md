@@ -4,8 +4,6 @@
 
 Pyn is a Python-based web application designed to enhance password security through advanced analysis and generation capabilities. It allows users to create, evaluate, and strengthen their passwords with detailed insights and recommendations. This tool is inspired by the [Cygnius Password Test](https://apps.cygnius.net/passtest/).
 
----
-
 ## 🚀 Key Features
 
 ### 🔎 Password Analysis
@@ -21,8 +19,6 @@ Pyn is a Python-based web application designed to enhance password security thro
 - Multiple character set options
 - Configurable length and complexity
 
----
-
 ## 📋 Table of Contents
 1. [Installation](#-installation)
 2. [Usage](#-usage)
@@ -32,8 +28,6 @@ Pyn is a Python-based web application designed to enhance password security thro
 6. [Known Issues](#-known-issues)
 7. [Related Resources](#-related-resources)
 8. [Contact](#-contact)
-
----
 
 ## 💻 Installation
 
@@ -62,7 +56,6 @@ Pyn is a Python-based web application designed to enhance password security thro
     ```bash
     source venv/bin/activate
     ```
-    
 
 #### macOS
 
@@ -84,7 +77,6 @@ Pyn is a Python-based web application designed to enhance password security thro
     ```bash
     source venv/bin/activate
     ```
-    
 
 #### Windows
 
@@ -107,14 +99,10 @@ Pyn is a Python-based web application designed to enhance password security thro
     call venv\Scripts\activate.bat
     ```
 
-----------
-
 ### Notes
 
 -   The setup scripts automatically create a virtual environment and install all dependencies listed in `requirements.txt`.
 -   Ensure Python and pip are correctly installed and accessible in your system's PATH before running the scripts.
-
-----------
 
 ## 🔍 Usage
 
@@ -278,8 +266,6 @@ passwords = "mypassword123,StrongP@ssw0rd"
 
 **Calculation Time**: 5.31 ms
 
----
-
 #### Example 2: StrongP@ssw0rd
 - **Strength**: Weak
 - **Entropy Score**: 91.76 bits
@@ -327,8 +313,6 @@ passwords = "mypassword123,StrongP@ssw0rd"
 
 **Calculation Time**: 4.65 ms
 
----
-
 ### Password Generation Example
 
 - **Password Length**: 12
@@ -359,8 +343,6 @@ passwords = "mypassword123,StrongP@ssw0rd"
 -   HTML
 -   JavaScript
 -   CSS
-
-----------
 
 ## 🤝 Contributing
 
@@ -393,13 +375,9 @@ Contributions are always welcome! Follow these steps to contribute:
     
 6.  Open a Pull Request with a clear description of your changes.
 
-----------
-
 ## 📜 License
 
 This project is distributed under the MIT License. See the `LICENSE` file for more information.
-
-----------
 
 ## 🐛 Known Issues
 
@@ -407,22 +385,26 @@ This project is distributed under the MIT License. See the `LICENSE` file for mo
 -   Potential rate limiting when using external APIs.
 -   Continuous improvement is required for analysis algorithms and front-end design.
 
-----------
-
 ## 🔗 Related Resources
 
 -   [zxcvbn Documentation](https://github.com/dropbox/zxcvbn)
 -   [Have I Been Pwned?](https://haveibeenpwned.com)
 -   [NIST Password Guidelines](https://www.nist.gov)
 
-----------
-
 ## 📞 Contact
 
 Project Link: [Pyn on GitHub](https://github.com/emanuellcs/pyn)
 
-----------
+For any inquiries, you can reach us at: contact.emanuellcs@gmail.com
 
-**⚠️ Disclaimer**: Always use generated passwords responsibly and avoid sharing them.
+## ❤️ Support
+
+To support this project, please consider donating through [GitHub Sponsors](https://github.com/sponsors/emanuellcs).
+
+## ⚠️ Disclaimer
+
+Always use generated passwords responsibly and avoid sharing them.
+
+---
 
 Made with ❤️ by [Emanuel Lázaro](https://github.com/emanuellcs).
