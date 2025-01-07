@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyn - Password Analyzer and Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --card-border: #dee2e6;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+
+        .progress {
+            height: 0.8rem;
+            border-radius: 1rem;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            background: linear-gradient(45deg, var(--primary-color), #00d4ff);
+            border-radius: 1rem;
+            transition: width 0.6s ease;
+        }
+
+        .score-text {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-weight: 500;
+        }
+
+        .score-0 { background-color: #dc3545; color: white; }
+        .score-1 { background-color: #ffc107; color: black; }
+        .score-2 { background-color: #fd7e14; color: white; }
+        .score-3 { background-color: #20c997; color: white; }
+        .score-4 { background-color: #198754; color: white; }
+
+        .text-warning { color: #cca600; }
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--card-border);
+            gap: 0.5rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--text-color);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            background-color: rgba(128, 128, 128, 0.1);
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .toggle-text {
+                display: none;
+            }
+        }
+
+        .form-control {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4 py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="display-6 mb-0">Pyn Password Analyzer and Generator</h1>
+                </div>
+                <p class="lead">A Python-based tool for password analysis and generation, featuring strength evaluation and compromised password detection.</p>
+                <p>Made with ❤️ by <a href="https://github.com/emanuellcs">Emanuel Lázaro</a>.</p>
+
+                <ul class="nav nav-tabs mb-4" id="passwordTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="analyzer-tab" data-bs-toggle="tab" 
+                                data-bs-target="#analyzer" type="button" role="tab">
+                            <i class="material-icons align-middle me-2">analytics</i>Analyzer
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="generator-tab" data-bs-toggle="tab" 
+                                data-bs-target="#generator" type="button" role="tab">
+                            <i class="material-icons align-middle me-2">password</i>Generator
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="passwordTabsContent">
+                    <div class="tab-pane fade show active" id="analyzer" role="tabpanel">
+                        <div class="card p-4 mb-4">
+                            <div class="card-body">
+                                <h2 class="h4 mb-3">Password Analyzer</h2>
+                                <p class="text-muted">Analyze the strength of your passwords and receive detailed feedback for improvement.</p>
+                                <form id="passwordForm">
+                                    <div class="mb-3">
+                                        <label for="passwords" class="form-label">Enter passwords (comma-separated):</label>
+                                        <input type="text" class="form-control form-control-lg" id="passwords" 
+                                               placeholder="e.g., password123, admin2021" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="material-icons align-middle me-2">search</i>Analyze
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="analyzerResults" class="row g-4"></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="generator" role="tabpanel">
+                        <div class="card p-4 mb-4">
+                            <div class="card-body">
+                                <h2 class="h4 mb-3">Password Generator</h2>
+                                <form id="generatorForm" class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label for="length" class="form-label">Password Length</label>
+                                        <input type="number" class="form-control form-control-lg" id="length" 
+                                                name="length" min="12" value="12" maxlength="64" required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label for="excludeChars" class="form-label">Exclude Characters</label>
+                                        <input type="text" class="form-control form-control-lg" id="excludeChars">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="row g-3">
+                                            <div class="col-6 col-md-3">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="useUpper" checked>
+                                                    <label for="useUpper" class="form-check-label">Uppercase</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="useLower" checked>
+                                                    <label for="useLower" class="form-check-label">Lowercase</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="useDigits" checked>
+                                                    <label for="useDigits" class="form-check-label">Numbers</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="useSpecial" checked>
+                                                    <label for="useSpecial" class="form-check-label">Special</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-success btn-lg w-100">
+                                            <i class="material-icons align-middle me-2">key</i>Generate Password
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="generatorResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password Generator Form Handler
+        document.getElementById('generatorForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = {
+                length: parseInt(document.getElementById('length').value),
+                use_upper: document.getElementById('useUpper').checked,
+                use_lower: document.getElementById('useLower').checked,
+                use_digits: document.getElementById('useDigits').checked,
+                use_special: document.getElementById('useSpecial').checked,
+                exclude_chars: document.getElementById('excludeChars').value,
+            };
+
+            const resultsContainer = document.getElementById('generatorResults');
+            resultsContainer.innerHTML = `
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Generating...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Generating secure password...</p>
+                    </div>
+                </div>`;
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultsContainer.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Generated Password</h5>
+                                    <div class="alert alert-success mb-4">
+                                        <h6 class="alert-heading mb-2">Password</h6>
+                                        <code class="fs-5" id="generatedPassword">${data.password}</code>
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <button class="btn btn-secondary" onclick="copyPassword(this)">
+                                            📋 Copy Password
+                                        </button>
+                                    </div>
+                                    <br>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-subtitle mb-2">Entropy</h6>
+                                                <p class="card-text fs-5 mb-0">${data.analysis.entropy} bits</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6 class="card-subtitle mb-2">Pwned Status</h6>
+                                                <p class="card-text fs-5 mb-0">
+                                                    ${data.analysis.pwned > 0 ? 'Pwned ' + data.analysis.pwned + ' times. Please generate another password.' : 'Not Pwned'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${data.analysis.suggestions?.length ? `
+                                    <div class="mt-4">
+                                        <h6>Suggestions</h6>
+                                        <ul class="list-group">
+                                            ${data.analysis.suggestions.map(suggestion =>
+                                                `<li class="list-group-item">${suggestion}</li>`
+                                            ).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (data.error) {
+                    resultsContainer.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="material-icons align-middle me-2">error</i>${data.error}
+                        </div>`;
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="material-icons align-middle me-2">error</i>An unexpected error occurred.
+                        </div>`;
+                }
+            } catch (error) {
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="material-icons align-middle me-2">error</i>${error.message}
+                    </div>`;
+            }
+        });
+
+        // Password Analyzer Form Handler
+        document.getElementById('passwordForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const passwords = document.getElementById('passwords').value;
+            const resultsContainer = document.getElementById('analyzerResults');
+            resultsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Analyzing...</span>
+                            </div>
+                            <p class="mt-2 mb-0">Analyzing passwords...</p>
+                        </div>
+                    </div>
+                </div>`;
+
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'passwords=' + encodeURIComponent(passwords),
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultsContainer.innerHTML = '';
+                
+                data.forEach(result => {
+                    if (!result) {
+                        console.error("Received null or undefined result:", result);
+                        return; // Skip processing this result
+                    }
+                    const scoreValue = result["score from 0 to 4"];
+                    const scoreText = scoreValue !== undefined && scoreValue !== null
+                        ? ['Very Weak', 'Weak', 'Moderate', 'Strong', 'Very Strong'][scoreValue] || 'Unknown'
+                        : 'Unknown';
+
+                    let cardContent = `
+                        <div class="col-12 col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title">
+                                            <i class="material-icons align-middle me-2">lock</i>
+                                             Password Analysis
+                                         </h5>
+                                          <span class="score-text ${scoreValue === 0 ? 'score-0' : scoreValue === 1 ? 'score-1' : scoreValue === 2 ? 'score-2' : scoreValue === 3 ? 'score-3' : scoreValue === 4 ? 'score-4' : ''}">
+                                             ${scoreText}
+                                         </span>
+                                     </div>
+
+                                     <div class="password-display mb-3 p-2 bg-light rounded">
+                                         <code class="fs-6">${result.password}</code>
+                                     </div>
+
+                                     <div class="mb-3">
+                                         <label class="form-label mb-1">Entropy Score</label>
+                                         <div class="progress mb-2">
+                                             <div class="progress-bar" role="progressbar"
+                                                 style="width: ${result.entropy !== undefined ? Math.min(result.entropy, 100) : 0}%"
+                                                 aria-valuenow="${result.entropy !== undefined ? result.entropy : 0}"
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                             </div>
+                                         </div>
+                                         <small class="text-muted">${result.entropy !== undefined ? result.entropy : 'N/A'} bits</small>
+                                     </div>
+
+                                     <div class="mb-3">
+                                         <label class="form-label mb-1">Expected Guesses</label>
+                                         <p class="text-muted">${result.expected_guesses || 'N/A'}</p>
+                                     </div>
+
+                                     <div class="mb-3">
+                                         <i class="material-icons align-middle me-2">timer</i>
+                                         <strong>Enhanced Crack Times:</strong>
+                                         <ul class="list-unstyled">
+                                             ${result.enhanced_crack_times && result.enhanced_crack_times.crack_times_display ? Object.entries(result.enhanced_crack_times.crack_times_display).map(([scenario, time]) => `<li>${scenario}: ${time}</li>`).join('') : ''}
+                                         </ul>
+                                     </div>
+
+                                     <div class="mb-3">
+                                         <i class="material-icons align-middle me-2">timer</i>
+                                         <strong>ZXCVBN Crack Times:</strong>
+                                         <ul class="list-unstyled">
+                                             ${result.zxcvbn_crack_times && result.zxcvbn_crack_times.display ? Object.entries(result.zxcvbn_crack_times.display).map(([scenario, time]) => `<li>${scenario}: ${time}</li>`).join('') : ''}
+                                         </ul>
+                                     </div>
+
+                                      <div class="mb-3">
+                                          <i class="material-icons align-middle me-2">security</i>
+                                          <strong>Pwned Status:</strong>
+                                          <span class="badge ${result.pwned > 0 ? 'bg-danger' : 'bg-success'}"
+                                                style="${result.pwned === 0 ? 'background-color: green;' : ''}">
+                                              ${result.pwned === 0 ? 'Not Pwned' : result.pwned === 1 ? 'Pwned 1 time' : `Pwned ${result.pwned} times`}
+                                          </span>
+                                      </div>
+
+                                     ${result.suggestions && result.suggestions.length > 0 ? `
+                                     <div class="mb-3">
+                                         <strong>
+                                             <i class="material-icons align-middle me-2">tips_and_updates</i>
+                                             Suggestions
+                                         </strong>
+                                         <ul class="list-group list-group-flush mt-2">
+                                             ${result.suggestions.map(suggestion =>
+                                                 `<li class="list-group-item">${suggestion}</li>`
+                                             ).join('')}
+                                         </ul>
+                                     </div>
+                                     ` : result.suggestions ? `
+                                     <div class="mb-3">
+                                         <strong>
+                                             <i class="material-icons align-middle me-2">tips_and_updates</i>
+                                             Suggestions
+                                         </strong>
+                                         <p>None</p>
+                                     </div>
+                                     `: ''}
+
+                                      ${result.complexity_issues && result.complexity_issues.length > 0 ? `
+                                     <div class="mb-3">
+                                         <strong>
+                                             <i class="material-icons align-middle me-2">warning</i>
+                                             Complexity Issues
+                                         </strong>
+                                         <ul class="list-group list-group-flush mt-2">
+                                             ${result.complexity_issues.map(issue =>
+                                                 `<li class="list-group-item text-warning">${issue}</li>`
+                                             ).join('')}
+                                         </ul>
+                                     </div>
+                                     `: ''}
+
+                                     <div class="mb-3">
+                                         <strong>
+                                             <i class="material-icons align-middle me-2">pattern</i>
+                                             Match Sequence
+                                         </strong>
+                                         <pre style="font-size: 0.85rem; line-height: 1.2;">${result.match_sequence || ''}</pre>
+                                     </div>
+
+                                     ${result.warning && result.warning !== "None" && result.warning !== "N/A" ? `
+                                     <div class="alert alert-warning mb-3">
+                                         <i class="material-icons align-middle me-2">warning</i>
+                                         ${result.warning}
+                                     </div>
+                                     ` : result.warning ? `
+                                     <div class="mb-3">
+                                         <strong>
+                                             <i class="material-icons align-middle me-2">warning</i>
+                                             Warning
+                                         </strong>
+                                         <p>None</p>
+                                     </div>
+                                     `: ''}
+
+                                     <div class="mb-3">
+                                         <i class="material-icons align-middle me-2">schedule</i>
+                                         <strong>Calculation Time:</strong> ${result.calculation_time_ms || 'N/A'} ms
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>`;
+                    resultsContainer.innerHTML += cardContent;
+                });
+            })
+            .catch(error => {
+                resultsContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="material-icons align-middle me-2">error</i>
+                            ${error.message}
+                        </div>
+                    </div>`;
+                });
+            return false;
+        });
+
+        // Function to copy the generated password to clipboard
+        function copyPassword(button) {
+        const passwordText = document.getElementById('generatedPassword').innerText;
+        navigator.clipboard.writeText(passwordText).then(() => {
+            // Change button text to indicate success while keeping the icon
+            button.innerText = 'Copied!';
+            // Reset button text after a short delay
+            setTimeout(() => {
+                button.innerText = '📋 Copy Password';
+            }, 1500);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    }
+    </script>
+</body>
+</html>
