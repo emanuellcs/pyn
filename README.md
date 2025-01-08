@@ -51,11 +51,17 @@ Pyn is a Python-based web application designed to enhance password security thro
     bash setups/setup_linux.sh
     ```
     
-3.  Activate the virtual environment:
+3.  If the virtual environment activation script encounters an error, execute the following command to manually activate the environment:
     
     ```bash
-    source venv/bin/activate
+    source venv/bin/activate && pip install -r requirements.txt
     ```
+
+4. Run `pyn.py`:
+
+   ```bash
+   python pyn.py
+   ```
 
 #### macOS
 
@@ -72,11 +78,17 @@ Pyn is a Python-based web application designed to enhance password security thro
     bash setups/setup_mac.sh
     ```
     
-3.  Activate the virtual environment:
+3.  If the virtual environment activation script encounters an error, execute the following command to manually activate the environment:
     
     ```bash
-    source venv/bin/activate
+    source venv/bin/activate && pip install -r requirements.txt
     ```
+
+4. Run `pyn.py`:
+
+   ```bash
+   python pyn.py
+   ```
 
 #### Windows
 
@@ -92,12 +104,18 @@ Pyn is a Python-based web application designed to enhance password security thro
     ```cmd
     setups\setup_windows.bat
     ```
-    
-3.  Activate the virtual environment:
+
+3.  If the virtual environment activation script encounters an error, execute the following command to manually activate the environment:
     
     ```cmd
-    call venv\Scripts\activate.bat
+    call venv\Scripts\activate.bat && pip install -r requirements.txt
     ```
+
+4. Run `pyn.py`:
+
+   ```cmd
+   python pyn.py
+   ```
 
 ### Notes
 
@@ -176,7 +194,7 @@ To generate a password, you can send a POST request to the `/generate` endpoint 
 To analyze a password, you can send a POST request to the `/analyze` endpoint with the following payload:
 
 ```text
-passwords = "mypassword123,StrongP@ssw0rd"
+passwords = "mypassword123,StrongP@ssw0rd123"
 ```
 
 **Example Response**:
@@ -185,33 +203,41 @@ passwords = "mypassword123,StrongP@ssw0rd"
     "results": [
         {
             "password": "mypassword123",
-            "entropy": 28.0,
-            "expected_guesses": 268435456,
+            "entropy": 67.21,
+            "expected_guesses": 170581728179578200000,
             "score from 0 to 4": 0,
             "enhanced_crack_times": {
-                "offline_fast_hash": "0.0 seconds",
-                "offline_slow_hash": "0.0 seconds",
-                "online_no_throttling": "0.0 seconds",
-                "online_throttling": "0.0 seconds"
+                "offline_fast_hash": "54.1 years",
+                "offline_parallel": "5.4 years",
+                "offline_slow_hash": "540.9 million years",
+                "online_no_throttling": "5.4 billion years",
+                "online_throttling": "540.9 billion years"
             },
-            "suggestions": ["Add more characters", "Use a mix of character types"],
-            "warning": "None",
-            "pwned": 0
+            "suggestions": ["Add another word or two. Uncommon words are better."],
+            "warning": "This is similar to a commonly used password.",
+            "pwned": 2315,
+            "complexity_issues": [
+                "Password must contain an uppercase letter.",
+                "Password must contain a special character or be at least 15 characters.",
+                "Password is too short, must be at least 15 characters."
+            ]
         },
         {
-            "password": "StrongP@ssw0rd",
-            "entropy": 40.0,
-            "expected_guesses": 1099511627776,
+            "password": "StrongP@ssw0rd123",
+            "entropy": 111.43,
+            "expected_guesses": 3.492798333840549e+33,
             "score from 0 to 4": 4,
             "enhanced_crack_times": {
-                "offline_fast_hash": "0.0 seconds",
-                "offline_slow_hash": "0.0 seconds",
-                "online_no_throttling": "0.0 seconds",
-                "online_throttling": "0.0 seconds"
+                "offline_fast_hash": "1107559.1 billion years",
+                "offline_parallel": "110755.9 billion years",
+                "offline_slow_hash": "11075590860732.3 billion years",
+                "online_no_throttling": "110755908607323.3 billion years",
+                "online_throttling": "11075590860732332.0 billion years"
             },
             "suggestions": [],
-            "warning": "None",
-            "pwned": 0
+            "warning": null,
+            "pwned": 0,
+            "complexity_issues": []
         }
     ]
 }
@@ -244,8 +270,8 @@ passwords = "mypassword123,StrongP@ssw0rd"
 
 **Complexity Issues**:
 - Password must contain an uppercase letter.
-- Password is too short, must be at least 15 characters.
 - Password must contain a special character or be at least 15 characters.
+- Password is too short, must be at least 15 characters.
 
 **Match Sequence**:
 - Match Sequence:
@@ -264,35 +290,31 @@ passwords = "mypassword123,StrongP@ssw0rd"
     - Uppercase-variations: 1
     - L33t-variations: 1
 
-**Calculation Time**: 5.31 ms
+**Warning**: This is similar to a commonly used password.
 
-#### Example 2: StrongP@ssw0rd
-- **Strength**: Weak
-- **Entropy Score**: 91.76 bits
-- **Expected Guesses**: 4.21e+27
+**Calculation Time**: 7.6 ms
+
+#### Example 2: StrongP@ssw0rd123
+- **Strength**: Strong
+- **Entropy Score**: 111.43 bits
+- **Expected Guesses**: 3.49e+33
 
 **Enhanced Crack Times**:
-- Offline Fast Hash: 1.3 billion years
-- Offline Parallel: 133.3 million years
-- Offline Slow Hash: 13,334,702.9 billion years
-- Online No Throttling: 133,347,028.8 billion years
-- Online Throttling: 13,334,702,884.6 billion years
+- Offline Fast Hash: 1,107,559.1 billion years
+- Offline Parallel: 110,755.9 billion years
+- Offline Slow Hash: 11,075,590,860,732.3 billion years
+- Online No Throttling: 110,755,908,607,323.3 billion years
+- Online Throttling: 11,075,590,860,732,332.0 billion years
 
 **ZXCVBN Crack Times**:
 - Offline Fast Hashing (1e10 per second): less than a second
-- Offline Slow Hashing (1e4 per second): 12 seconds
-- Online No Throttling (10 per second): 3 hours
-- Online Throttling (100 per hour): 2 months
+- Offline Slow Hashing (1e4 per second): 3 hours
+- Online No Throttling (10 per second): 4 months
+- Online Throttling (100 per hour): centuries
 
-**Pwned Status**: Pwned 6 times
+**Pwned Status**: Not Pwned
 
-**Suggestions**:
-- Add another word or two. Uncommon words are better.
-- Capitalization doesn't help very much.
-- Predictable substitutions like '@' instead of 'a' don't help very much.
-
-**Complexity Issues**:
-- Password is too short, must be at least 15 characters.
+**Suggestions**: None
 
 **Match Sequence**:
 - Match Sequence:
@@ -310,8 +332,10 @@ passwords = "mypassword123,StrongP@ssw0rd"
     - Base-guesses: 2
     - Uppercase-variations: 2
     - L33t-variations: 4
+  - '123'
+    - Pattern: sequence
 
-**Calculation Time**: 4.65 ms
+**Calculation Time**: 6.25 ms
 
 ### Password Generation Example
 
