@@ -419,7 +419,7 @@ This project is distributed under the MIT License. See the `LICENSE` file for mo
 
 Project Link: [Pyn on GitHub](https://github.com/emanuellcs/pyn)
 
-For any inquiries, you can reach us at: contact.emanuellcs@gmail.com
+For any inquiries, you can reach me at: emanuellzr01@outlook.com
 
 ## ❤️ Support
 
