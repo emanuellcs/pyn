@@ -1,0 +1,3 @@
+TESTING = True
+SECRET_KEY = "test-key"
+WTF_CSRF_ENABLED = False

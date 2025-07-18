@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Password Generator 🔑</h1>
+    <p class="lead">Create a strong and secure password for your accounts. 🔒</p>
+
+    <form id="password-generator-form" class="mt-4" data-url="{{ url_for('passwords.index') }}">
+        <div class="form-group">
+            <label for="length">Password Length:</label>
+            <input type="number" id="length" name="length" class="form-control" value="16" min="8" max="64">
+            <small class="form-text text-muted">Longer passwords are more secure. We recommend at least 16 characters. 💪</small>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_upper" name="use_upper" class="form-check-input" checked>
+            <label for="use_upper" class="form-check-label">Include Uppercase Letters (A-Z)</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_lower" name="use_lower" class="form-check-input" checked>
+            <label for="use_lower" class="form-check-label">Include Lowercase Letters (a-z)</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_digits" name="use_digits" class="form-check-input" checked>
+            <label for="use_digits" class="form-check-label">Include Numbers (0-9)</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_special" name="use_special" class="form-check-input" checked>
+            <label for="use_special" class="form-check-label">Include Symbols (!@#$%^&*)</label>
+        </div>
+        <button type="button" id="generate-password-button" class="btn btn-primary mt-3">Generate Password</button>
+    </form>
+
+    <div class="result-container mt-4" style="display: none;">
+        <h2>Generated Password</h2>
+        <div class="input-group">
+            <input type="text" class="form-control lead" id="password-output" readonly>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard()">Copy</button>
+            </div>
+        </div>
+        <div class="analysis-container mt-3">
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="container">
+    <h2 class="mt-5">Password Analyzer 🔬</h2>
+    <p class="lead">Analyze the strength of your passwords.</p>
+    <div class="form-group">
+        <textarea id="password-input" class="form-control" rows="3" placeholder="Enter one or more passwords, separated by commas"></textarea>
+    </div>
+    <button id="analyze-button" class="btn btn-info mt-3">Analyze Passwords</button>
+    <div id="analysis-results" class="mt-4"></div>
+</div>
+
+<script>
+function copyToClipboard() {
+    const passwordInput = document.getElementById('password-output');
+    passwordInput.select();
+    passwordInput.setSelectionRange(0, 99999); /* For mobile devices */
+    document.execCommand('copy');
+    alert('Password copied to clipboard!');
+}
+
+document.getElementById('analyze-button').addEventListener('click', function() {
+    const passwords = document.getElementById('password-input').value;
+    fetch('/analyze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ passwords: passwords })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultsContainer = document.getElementById('analysis-results');
+        resultsContainer.innerHTML = '';
+
+        if (data.error) {
+            resultsContainer.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+            return;
+        }
+
+        data.analysis_results.forEach(result => {
+            const resultElement = document.createElement('div');
+            resultElement.className = 'card mb-3';
+            
+            let detailsHtml = '<ul class="list-group list-group-flush">';
+            result.details.forEach(detail => {
+                detailsHtml += `<li class="list-group-item"><strong>${detail.title}:</strong> ${detail.explanation}</li>`;
+            });
+            detailsHtml += '</ul>';
+
+            resultElement.innerHTML = `
+                <div class="card-header">
+                    Password: <strong>${result.password}</strong> - Strength: <span class="text-success">${result.strength}</span>
+                </div>
+                ${detailsHtml}
+            `;
+            resultsContainer.appendChild(resultElement);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const resultsContainer = document.getElementById('analysis-results');
+        resultsContainer.innerHTML = `<div class="alert alert-danger">An error occurred while analyzing passwords.</div>`;
+    });
+});
+</script>
+{% endblock %}

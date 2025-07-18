@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul class="nav nav-tabs mb-4" id="passwordTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="analyzer-tab" data-bs-toggle="tab" data-bs-target="#analyzer" type="button" role="tab">
+            <i class="material-icons align-middle me-2">analytics</i>Analyzer
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="generator-tab" data-bs-toggle="tab" data-bs-target="#generator" type="button" role="tab">
+            <i class="material-icons align-middle me-2">password</i>Generator
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="passphrase-tab" data-bs-toggle="tab" data-bs-target="#passphrase" type="button" role="tab">
+            <i class="material-icons align-middle me-2">short_text</i>Passphrase
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="passwordTabsContent">
+    <div class="tab-pane fade show active" id="analyzer" role="tabpanel">
+        <h2>Password Analyzer 🕵️‍♂️</h2>
+        <p>Analyze the strength of your passwords and receive detailed feedback.</p>
+        <div class="card">
+            <div class="card-body">
+                <form id="passwordForm" method="post" action="{{ url_for('main.index') }}">
+                    <input type="hidden" name="analyze" value="1">
+                    <div class="mb-3">
+                        <label for="passwords" class="form-label">
+                            Enter passwords (comma-separated)
+                            <span class="help-tooltip" title="Enter one or more passwords separated by commas to analyze them.">(?)</span>
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="passwords" name="passwords" placeholder="e.g., password123, admin2021" required>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="checkPwned" name="check_pwned" checked>
+                        <label class="form-check-label" for="checkPwned">Check against Pwned Passwords database (may be slow)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="material-icons align-middle me-2">search</i>Analyze Passwords
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div id="analyzerResults" class="row g-4 mt-1"></div>
+    </div>
+
+    <div class="tab-pane fade" id="generator" role="tabpanel">
+<div class="container">
+    <h2 class="mt-5">Password Generator 🔑</h2>
+    <p>Create a strong and secure password for your accounts. 🔒</p>
+
+    <form id="generatorForm" method="post" class="mt-4">
+        <div class="form-group">
+            <label for="length">Password Length:</label>
+            <input type="number" id="length" name="length" class="form-control" value="16" min="8" max="64">
+            <small class="form-text text-muted">Longer passwords are more secure. We recommend at least 16 characters. 💪</small>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_upper" name="use_upper" class="form-check-input" checked>
+            <label for="use_upper" class="form-check-label">Include Uppercase Letters (A-Z)</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_lower" name="use_lower" class="form-check-input" checked>
+            <label for="use_lower" class="form-check-label">Include Lowercase Letters (a-z)</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_digits" name="use_digits" class="form-check-input" checked>
+            <label for="use_digits" class="form-check-label">Include Numbers (0-9)</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="use_special" name="use_special" class="form-check-input" checked>
+            <label for="use_special" class="form-check-label">Include Symbols (!@#$%^&*)</label>
+        </div>
+        <div class="form-group mt-3">
+            <label for="exclude_chars">Exclude Characters:</label>
+            <input type="text" id="exclude_chars" name="exclude_chars" class="form-control" placeholder="e.g., abc, 123">
+            <small class="form-text text-muted">Enter characters to exclude from the password.</small>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Generate Password</button>
+    </form>
+
+    <div id="generatorResults" class="mt-4"></div>
+
+    {% if password_result %}
+    <div class="result-container mt-4">
+        <h2>Your New Password! 🥳</h2>
+        <div class="input-group">
+            <input type="text" class="form-control lead" id="password-output" value="{{ password_result }}" readonly>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard()">Copy 📋</button>
+            </div>
+        </div>
+        <div class="analysis-container mt-3">
+            <h4>Analysis: <span class="text-success">{{ analysis.strength }}</span></h4>
+            <ul class="list-group">
+                {% for item in analysis.details %}
+                <li class="list-group-item">
+                    <strong>{{ item.title }}:</strong> {{ item.explanation }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyToClipboard() {
+    const passwordInput = document.getElementById('password-output');
+    passwordInput.select();
+    passwordInput.setSelectionRange(0, 99999); /* For mobile devices */
+    document.execCommand('copy');
+    alert('Password copied to clipboard!');
+}
+</script>
+    </div>
+    <div class="tab-pane fade" id="passphrase" role="tabpanel">
+        <h2>Passphrase Generator 📜</h2>
+        <p>Create a memorable and secure passphrase.</p>
+        {% include "passphrase/index.html" %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Password Generator Form Handler
+    document.getElementById('generatorForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = {
+            length: parseInt(document.getElementById('length').value),
+            use_upper: document.getElementById('use_upper').checked,
+            use_lower: document.getElementById('use_lower').checked,
+            use_digits: document.getElementById('use_digits').checked,
+            use_special: document.getElementById('use_special').checked,
+            exclude_chars: document.getElementById('exclude_chars').value,
+        };
+
+        const resultsContainer = document.getElementById('generatorResults');
+        resultsContainer.innerHTML = `
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Generating...</span>
+                    </div>
+                    <p class="mt-2 mb-0 text-muted">Generating secure password...</p>
+                </div>
+            </div>`;
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const response = await fetch("{{ url_for('passwords.index') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                resultsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="card-header">Generated Password</div>
+                        <div class="card-body">
+                            <div class="alert alert-light text-center mb-4">
+                                <code class="fs-4" id="generatedPassword">${data.password_result}</code>
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-secondary" onclick="copyPassword(this)">
+                                    <i class="material-icons align-middle me-1">content_copy</i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (data.error) {
+                resultsContainer.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+            } else {
+                resultsContainer.innerHTML = `<div class="alert alert-danger">An unexpected error occurred.</div>`;
+            }
+        } catch (error) {
+            resultsContainer.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+        }
+    });
+
+    // Password Analyzer Form Handler
+    document.getElementById('passwordForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const form = event.target;
+        const passwords = document.getElementById('passwords').value;
+        const checkPwned = document.getElementById('checkPwned').checked;
+        const resultsContainer = document.getElementById('analyzerResults');
+        resultsContainer.innerHTML = `
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Analyzing...</span>
+                        </div>
+                        <p class="mt-2 mb-0 text-muted">Analyzing passwords...</p>
+                    </div>
+                </div>
+            </div>`;
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ passwords: passwords, check_pwned: checkPwned })
+            });
+            const data = await response.json();
+            resultsContainer.innerHTML = '';
+            const passwordList = passwords.split(',').map(p => p.trim());
+            data.analysis_results.forEach((result, index) => {
+                if (!result || result.error) {
+                    resultsContainer.innerHTML += `<div class="col-12"><div class="alert alert-warning">${result.error || 'An unknown error occurred.'}</div></div>`;
+                    return;
+                }
+
+                const {
+                    password_strength_metrics: strength,
+                    crack_time_estimates: crack_times,
+                    complexity_requirements: complexity,
+                    zxcvbn_analysis: zxcvbn,
+                    character_set_analysis: charset,
+                    pwned_password_check: pwned,
+                    performance
+                } = result;
+
+                const scoreText = ['Very Weak', 'Weak', 'Moderate', 'Strong', 'Very Strong'][zxcvbn.score] || 'Unknown';
+
+                let cardContent = `
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Analysis for: <code>${passwordList[index]}</code></h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Left Column -->
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Password Strength</h6>
+                                                <p><strong>zxcvbn Score:</strong> ${zxcvbn.score}/4 (${scoreText})</p>
+                                                <p><strong>Entropy:</strong> ${strength.entropy.toFixed(2)} bits</p>
+                                                <p><strong>Pwned Check:</strong> ${pwned.pwned ? `<span class="text-danger">Pwned ${pwned.pwned_count} times</span>` : '<span class="text-success">Not Pwned</span>'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Crack Time Estimates</h6>
+                                                <ul class="list-unstyled">
+                                                    ${Object.entries(crack_times).map(([key, value]) => `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${value.display}</li>`).join('')}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Character Set</h6>
+                                                <p><strong>Sets Used:</strong> ${charset.char_sets_used.join(', ') || 'None'}</p>
+                                                <p><strong>Set Size:</strong> ${charset.char_set_size}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column -->
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Complexity Requirements</h6>
+                                                <ul class="list-unstyled">
+                                                    ${Object.entries(complexity).map(([key, value]) => `<li><strong>${key.replace(/_/g, ' ')}:</strong> ${value ? '<span class="text-success">✓</span>' : '<span class="text-danger">✗</span>'}</li>`).join('')}
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">zxcvbn Feedback</h6>
+                                                ${zxcvbn.feedback.warning ? `<p class="text-danger"><strong>Warning:</strong> ${zxcvbn.feedback.warning}</p>` : ''}
+                                                ${zxcvbn.feedback.suggestions && zxcvbn.feedback.suggestions.length > 0 ? `
+                                                    <h6>Suggestions:</h6>
+                                                    <ul>
+                                                        ${zxcvbn.feedback.suggestions.map(s => `<li>${s}</li>`).join('')}
+                                                    </ul>
+                                                ` : '<p>No suggestions.</p>'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-muted text-center">
+                                    Analysis completed in ${performance.calculation_time_ms} ms
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                resultsContainer.innerHTML += cardContent;
+            });
+        } catch (error) {
+            resultsContainer.innerHTML = `<div class="col-12"><div class="alert alert-danger">${error.message}</div></div>`;
+        }
+    });
+
+    function copyPassword(button) {
+        const passwordText = document.getElementById('generatedPassword').innerText;
+        navigator.clipboard.writeText(passwordText).then(() => {
+            button.innerHTML = '<i class="material-icons align-middle me-1">check</i> Copied!';
+            setTimeout(() => {
+                button.innerHTML = '<i class="material-icons align-middle me-1">content_copy</i> Copy';
+            }, 2000);
+        });
+    }
+</script>
+{% endblock %}
