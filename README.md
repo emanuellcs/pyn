@@ -2,7 +2,7 @@
 
 ## 🔐 Overview
 
-Pyn is a Python-based web application designed to enhance password security through advanced analysis and generation capabilities. It allows users to create, evaluate, and strengthen their passwords with detailed insights and recommendations. This tool is inspired by the [Cygnius Password Test](https://apps.cygnius.net/passtest/).
+Pyn is a Python-based Flask web application designed to enhance password security. It provides tools for analyzing the strength of existing passwords and generating new, secure passwords. This project is inspired by the [Cygnius Password Test](https://apps.cygnius.net/passtest/).
 
 ## 🚀 Key Features
 
@@ -11,7 +11,7 @@ Pyn is a Python-based web application designed to enhance password security thro
 - Entropy calculation
 - Crack time estimation
 - Complexity assessment
-- Pwned password detection
+- Pwned password detection via [Have I Been Pwned?](https://haveibeenpwned.com/) API
 
 ### 🔧 Password Generation
 - Customizable password creation
@@ -19,385 +19,95 @@ Pyn is a Python-based web application designed to enhance password security thro
 - Multiple character set options
 - Configurable length and complexity
 
-## 📋 Table of Contents
-1. [Installation](#-installation)
-2. [Usage](#-usage)
-3. [Technologies Used](#-technologies-used)
-4. [Contributing](#-contributing)
-5. [License](#-license)
-6. [Known Issues](#-known-issues)
-7. [Related Resources](#-related-resources)
-8. [Contact](#-contact)
+## 💡 How it Works
 
-## 💻 Installation
+### Password Analysis
+
+Pyn's password analysis goes beyond simple checks, providing a deep dive into a password's resilience:
+
+-   **Entropy Calculation**: Measures the randomness and unpredictability of a password in bits. Higher entropy means a more secure password.
+-   **Crack Time Estimation**: Estimates how long it would take for various attack methods to crack a password. This includes:
+    -   **Offline Fast Hashing**: Simulates attacks where an attacker has access to hashed passwords and can attempt billions of guesses per second.
+    -   **Offline Slow Hashing**: Accounts for slower hashing algorithms designed to resist brute-force attacks.
+    -   **Online No Throttling**: Represents attacks against online services without rate limits.
+    -   **Online With Throttling**: Simulates attacks against services with rate limiting, significantly slowing down attempts.
+    -   **Offline Parallel Attack**: Considers large-scale attacks using multiple machines.
+-   **Complexity Assessment**: Checks if a password meets common complexity requirements, such as minimum length, inclusion of uppercase, lowercase, numbers, and special characters, and avoidance of excessive character repeats.
+-   **Pwned Password Detection**: Integrates with the "Have I Been Pwned?" API to check if a password has appeared in known data breaches, alerting users to compromised credentials.
+
+### Password Generation
+
+The password generator creates strong, unique passwords based on user-defined criteria:
+
+1.  **Character Set Selection**: Users can specify which character types to include (uppercase, lowercase, digits, special characters).
+2.  **Exclusion Rules**: Specific characters can be excluded to avoid ambiguity (e.g., 'l', '1', 'O', '0').
+3.  **Random Generation**: Passwords are built using cryptographically secure random number generation.
+4.  **Post-Generation Analysis and Validation**: After a password is generated, it undergoes an immediate analysis using the same robust methods as the password analysis feature. The system then validates if the generated password meets predefined security criteria (e.g., not pwned, sufficient zxcvbn score, adequate entropy). If the generated password does not meet these criteria, the system attempts to regenerate it up to a maximum number of times to ensure a secure password is delivered.
+
+### Passphrase Generation
+
+Pyn also supports generating secure passphrases, which are often easier to remember than complex passwords:
+
+1.  **Wordlist Usage**: Passphrases are generated using the EFF (Electronic Frontier Foundation) large wordlist, which consists of carefully selected words to ensure randomness and memorability.
+2.  **Dice Roll Method**: Words are selected based on a simulated dice roll method, ensuring true randomness and making the passphrase highly unpredictable.
+3.  **Customization**: Users can specify the number of words, the separator character (e.g., hyphens, spaces), and whether to capitalize each word.
+
+## 💻 Getting Started
 
 ### Prerequisites
 - Python 3.8+
 - pip
 - Virtual environment support
 
-### Setup Instructions
+### 🚀 Running the application
 
-#### Linux
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/emanuellcs/pyn.git
-   cd pyn
-	```
+For a quick and easy setup, use the provided initialization scripts:
 
-2.  Run the setup script:
-    
-    ```bash
-    bash setups/setup_linux.sh
-    ```
-    
-3.  If the virtual environment activation script encounters an error, execute the following command to manually activate the environment:
-    
-    ```bash
-    source venv/bin/activate && pip install -r requirements.txt
-    ```
-
-4. Run `pyn.py`:
-
-   ```bash
-   python pyn.py
-   ```
-
-#### macOS
-
-1.  Clone the repository:
-    
-    ```bash
-    git clone https://github.com/emanuellcs/pyn.git
-    cd pyn
-    ```
-    
-2.  Run the setup script:
-    
-    ```bash
-    bash setups/setup_mac.sh
-    ```
-    
-3.  If the virtual environment activation script encounters an error, execute the following command to manually activate the environment:
-    
-    ```bash
-    source venv/bin/activate && pip install -r requirements.txt
-    ```
-
-4. Run `pyn.py`:
-
-   ```bash
-   python pyn.py
-   ```
-
-#### Windows
-
-1.  Clone the repository:
-    
+-   **Windows:**
     ```cmd
-    git clone https://github.com/emanuellcs/pyn.git
-    cd pyn
+    scripts\init_app.bat
     ```
-    
-2.  Run the setup script:
-    
-    ```cmd
-    setups\setup_windows.bat
+-   **macOS/Linux:**
+    ```bash
+    bash scripts/init_app.sh
     ```
+These scripts will handle the virtual environment setup, dependency installation, database initialization, and application launch.
 
-3.  If the virtual environment activation script encounters an error, execute the following command to manually activate the environment:
-    
-    ```cmd
-    call venv\Scripts\activate.bat && pip install -r requirements.txt
-    ```
+## 🔗 API Endpoints (Overview)
 
-4. Run `pyn.py`:
+Pyn exposes API endpoints for programmatic access to its features:
 
-   ```cmd
-   python pyn.py
-   ```
+-   **`/passwords/analyze` (POST):** Analyze one or more passwords for strength, entropy, crack time, and pwned status.
+-   **`/passwords/generate` (POST):** Generate secure, customizable passwords based on specified criteria.
+-   **`/passphrase/analyze` (POST):** Analyze passphrases.
+-   **`/passphrase/generate` (POST):** Generate passphrases.
 
-### Notes
+Refer to the application's source code (e.g., `app/blueprints/passwords/routes.py` and `app/blueprints/passphrase/routes.py`) for detailed API payload and response structures.
 
--   The setup scripts automatically create a virtual environment and install all dependencies listed in `requirements.txt`.
--   Ensure Python and pip are correctly installed and accessible in your system's PATH before running the scripts.
-
-## 🔍 Usage
-
-### Running the Application
-
-To start the application, run the following command:
-
-```bash
-python pyn.py
-```
-
-**Expected Output**:
-```
- * Serving Flask app 'pyn'
- * Debug mode: on
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 121-363-416
-```
-
-### API Endpoints
-
-#### Password Analysis
-
--   **Endpoint**: `/analyze`
--   **Method**: POST
--   **Payload**: Comma-separated passwords
-
-#### Password Generation
-
--   **Endpoint**: `/generate`
--   **Method**: POST
--   **Configurable Options**:
-    -   Length
-    -   Character types
-    -   Exclusion rules
-
-### Example Requests
-
-#### Generate Password Example
-
-To generate a password, you can send a POST request to the `/generate` endpoint with the following JSON payload:
-
-```json
-{
-    "length": 16,
-    "use_upper": true,
-    "use_lower": true,
-    "use_digits": true,
-    "use_special": true,
-    "exclude_chars": "l1O0"  // Example of characters to exclude
-}
-```
-
-**Example Response**:
-```json
-{
-    "password": "A1b2C3d4E5f6G7h8",
-    "analysis": {
-        "strength": "strong",
-        "crack_time": "years"
-    }
-}
-```
-
-#### Analyze Password Example
-
-To analyze a password, you can send a POST request to the `/analyze` endpoint with the following payload:
-
-```text
-passwords = "mypassword123,StrongP@ssw0rd123"
-```
-
-**Example Response**:
-```json
-{
-    "results": [
-        {
-            "password": "mypassword123",
-            "entropy": 67.21,
-            "expected_guesses": 170581728179578200000,
-            "score from 0 to 4": 0,
-            "enhanced_crack_times": {
-                "offline_fast_hash": "54.1 years",
-                "offline_parallel": "5.4 years",
-                "offline_slow_hash": "540.9 million years",
-                "online_no_throttling": "5.4 billion years",
-                "online_throttling": "540.9 billion years"
-            },
-            "suggestions": ["Add another word or two. Uncommon words are better."],
-            "warning": "This is similar to a commonly used password.",
-            "pwned": 2315,
-            "complexity_issues": [
-                "Password must contain an uppercase letter.",
-                "Password must contain a special character or be at least 15 characters.",
-                "Password is too short, must be at least 15 characters."
-            ]
-        },
-        {
-            "password": "StrongP@ssw0rd123",
-            "entropy": 111.43,
-            "expected_guesses": 3.492798333840549e+33,
-            "score from 0 to 4": 4,
-            "enhanced_crack_times": {
-                "offline_fast_hash": "1107559.1 billion years",
-                "offline_parallel": "110755.9 billion years",
-                "offline_slow_hash": "11075590860732.3 billion years",
-                "online_no_throttling": "110755908607323.3 billion years",
-                "online_throttling": "11075590860732332.0 billion years"
-            },
-            "suggestions": [],
-            "warning": null,
-            "pwned": 0,
-            "complexity_issues": []
-        }
-    ]
-}
-```
-
-### Password Analysis Examples
-
-#### Example 1: mypassword123
-- **Strength**: Weak
-- **Entropy Score**: 67.21 bits
-- **Expected Guesses**: 170,581,728,179,578,200,000
-
-**Enhanced Crack Times**:
-- Offline Fast Hash: 54.1 years
-- Offline Parallel: 5.4 years
-- Offline Slow Hash: 540.9 million years
-- Online No Throttling: 5.4 billion years
-- Online Throttling: 540.9 billion years
-
-**ZXCVBN Crack Times**:
-- Offline Fast Hashing (1e10 per second): less than a second
-- Offline Slow Hashing (1e4 per second): 7 seconds
-- Online No Throttling (10 per second): 2 hours
-- Online Throttling (100 per hour): 29 days
-
-**Pwned Status**: Pwned 2315 times
-
-**Suggestions**:
-- Add another word or two. Uncommon words are better.
-
-**Complexity Issues**:
-- Password must contain an uppercase letter.
-- Password must contain a special character or be at least 15 characters.
-- Password is too short, must be at least 15 characters.
-
-**Match Sequence**:
-- Match Sequence:
-  - 'my'
-    - Pattern: dictionary
-    - Dict-name: us_tv_and_film
-    - Rank: 13
-    - Base-guesses: 13
-    - Uppercase-variations: 1
-    - L33t-variations: 1
-  - 'password123'
-    - Pattern: dictionary
-    - Dict-name: passwords
-    - Rank: 595
-    - Base-guesses: 595
-    - Uppercase-variations: 1
-    - L33t-variations: 1
-
-**Warning**: This is similar to a commonly used password.
-
-**Calculation Time**: 7.6 ms
-
-#### Example 2: StrongP@ssw0rd123
-- **Strength**: Strong
-- **Entropy Score**: 111.43 bits
-- **Expected Guesses**: 3.49e+33
-
-**Enhanced Crack Times**:
-- Offline Fast Hash: 1,107,559.1 billion years
-- Offline Parallel: 110,755.9 billion years
-- Offline Slow Hash: 11,075,590,860,732.3 billion years
-- Online No Throttling: 110,755,908,607,323.3 billion years
-- Online Throttling: 11,075,590,860,732,332.0 billion years
-
-**ZXCVBN Crack Times**:
-- Offline Fast Hashing (1e10 per second): less than a second
-- Offline Slow Hashing (1e4 per second): 3 hours
-- Online No Throttling (10 per second): 4 months
-- Online Throttling (100 per hour): centuries
-
-**Pwned Status**: Not Pwned
-
-**Suggestions**: None
-
-**Match Sequence**:
-- Match Sequence:
-  - 'Strong'
-    - Pattern: dictionary
-    - Dict-name: surnames
-    - Rank: 570
-    - Base-guesses: 570
-    - Uppercase-variations: 2
-    - L33t-variations: 1
-  - 'P@ssw0rd'
-    - Pattern: dictionary
-    - Dict-name: passwords
-    - Rank: 2
-    - Base-guesses: 2
-    - Uppercase-variations: 2
-    - L33t-variations: 4
-  - '123'
-    - Pattern: sequence
-
-**Calculation Time**: 6.25 ms
-
-### Password Generation Example
-
-- **Password Length**: 12
-- **Exclude Characters**: None
-- **Generated Password**: @0B$9ob:D2)F
-- **Entropy**: 78.66 bits
-- **Pwned Status**: 0
-
-## 🛠 Technologies Used
+## 🛠️ Technologies Used
 
 ### Backend
-
 -   Python
--   Flask
+-   Flask (Web Framework)
 
 ### Security Libraries
-
--   zxcvbn
--   hashlib
+-   zxcvbn (Password strength estimation)
+-   hashlib (Hashing library)
+-   Flask-SQLAlchemy (ORM for database interaction)
+-   SQLAlchemy (Python SQL Toolkit and ORM)
 
 ### API Integration
-
--   Requests
--   Have I Been Pwned? API
+-   Requests (HTTP library)
+-   Have I Been Pwned? API (For breach checking)
 
 ### Web Technologies
-
 -   HTML
 -   JavaScript
 -   CSS
 
 ## 🤝 Contributing
 
-Contributions are always welcome! Follow these steps to contribute:
-
-1.  Read the `CONTRIBUTING.md` file for detailed guidelines.
-2.  Fork the repository:
-    
-    ```bash
-    git fork https://github.com/emanuellcs/pyn.git
-    ```
-    
-3.  Create a branch for your feature:
-    
-    ```bash
-    git checkout -b feature/AmazingFeature
-    ```
-    
-4.  Commit your changes:
-    
-    ```bash
-    git commit -m "Add AmazingFeature"
-    ```
-    
-5.  Push to your branch:
-    
-    ```bash
-    git push origin feature/AmazingFeature
-    ```
-    
-6.  Open a Pull Request with a clear description of your changes.
+Contributions are welcome! Please refer to the `CONTRIBUTING.md` file for detailed guidelines on how to contribute to this project.
 
 ## 📜 License
 
@@ -405,8 +115,8 @@ This project is distributed under the MIT License. See the `LICENSE` file for mo
 
 ## 🐛 Known Issues
 
--   Limited support for international characters.
--   Potential rate limiting when using external APIs.
+-   Limited support for international characters in some analysis features.
+-   Potential rate limiting when using external APIs (e.g., Have I Been Pwned?).
 -   Continuous improvement is required for analysis algorithms and front-end design.
 
 ## 🔗 Related Resources
@@ -420,10 +130,6 @@ This project is distributed under the MIT License. See the `LICENSE` file for mo
 Project Link: [Pyn on GitHub](https://github.com/emanuellcs/pyn)
 
 For any inquiries, you can reach me at: emanuellzr01@outlook.com
-
-## ❤️ Support
-
-To support this project, please consider donating through [GitHub Sponsors](https://github.com/sponsors/emanuellcs).
 
 ## ⚠️ Disclaimer
 

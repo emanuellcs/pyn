@@ -1,6 +1,4 @@
 def is_secure(passphrase):
-    """
-    Evaluates if a passphrase is secure enough.
-    This is a placeholder for a more robust implementation.
-    """
+    # Checks if the passphrase contains at least four words.
+    # This is a simplified security metric.
     return len(passphrase.split('-')) >= 4

@@ -6,9 +6,17 @@ def test_password_analysis(client):
     assert len(json_data['analysis_results']) > 0
 
 def test_password_generation(client):
-    response = client.post('/passwords/generate', json={'length': 12})
+    response = client.post('/passwords/', json={
+        'length': 12,
+        'use_upper': True,
+        'use_lower': True,
+        'use_digits': True,
+        'use_special': True
+    })
     assert response.status_code == 200
-    assert b'password' in response.data
+    json_data = response.get_json()
+    assert 'password_result' in json_data
+    assert 'analysis' in json_data
 
 
 def test_detailed_password_analysis(client):
@@ -39,4 +47,4 @@ def test_detailed_password_analysis(client):
     titles = [item['title'] for item in details]
     assert 'Length' in titles
     assert 'Character Variety' in titles
-    assert 'Time to Crack' in titles
+    assert 'Time to Crack (Offline, Fast Hashing)' in titles

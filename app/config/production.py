@@ -1,2 +1,4 @@
+# Disables debug mode for production, preventing sensitive information exposure and improving performance.
 DEBUG = False
-SECRET_KEY = "prod-key"  # This should be set from an environment variable in a real application
+# Provides a strong, unique key for production, essential for session management and security features.
+SECRET_KEY = "prod-key"
