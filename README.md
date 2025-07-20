@@ -52,6 +52,15 @@ Pyn also supports generating secure passphrases, which are often easier to remem
 2.  **Dice Roll Method**: Words are selected based on a simulated dice roll method, ensuring true randomness and making the passphrase highly unpredictable.
 3.  **Customization**: Users can specify the number of words, the separator character (e.g., hyphens, spaces), and whether to capitalize each word.
 
+### Local Deployment and Security
+
+Pyn is designed primarily for local deployment to ensure maximum security and privacy. Running the application locally means that sensitive password data never leaves your machine, reducing the risk of exposure to external threats.
+
+The only online interaction is with the optional "Have I Been Pwned?" API, which checks if passwords have appeared in known data breaches. This API usage is optional and can be disabled to maintain a fully offline and secure environment.
+
+This local-first approach makes Pyn suitable for users who require strong password security without relying on cloud services or external servers.
+
+
 ## 💻 Getting Started
 
 ### Prerequisites
@@ -72,6 +81,66 @@ For a quick and easy setup, use the provided initialization scripts:
     bash scripts/init_app.sh
     ```
 These scripts will handle the virtual environment setup, dependency installation, database initialization, and application launch.
+
+### 🛠️ Manual Setup and Commands
+
+If you prefer to run the setup commands manually instead of using the scripts, follow these steps:
+
+#### On Windows (Command Prompt):
+
+1. Create a virtual environment (if not already created):
+    ```
+    python -m venv venv
+    ```
+2. Activate the virtual environment:
+    ```
+    venv\Scripts\activate.bat
+    ```
+3. Upgrade pip and install dependencies:
+    ```
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+4. Set the FLASK_APP environment variable:
+    ```
+    set FLASK_APP=run.py
+    ```
+5. Initialize the database:
+    ```
+    flask init-db
+    ```
+6. Run the application:
+    ```
+    python run.py
+    ```
+
+#### On macOS/Linux (Bash/Zsh/Fish):
+
+1. Create a virtual environment (if not already created):
+    ```
+    python3 -m venv venv
+    ```
+2. Activate the virtual environment:
+    ```
+    source venv/bin/activate
+    ```
+3. Upgrade pip and install dependencies:
+    ```
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+4. Set the FLASK_APP environment variable:
+    ```
+    export FLASK_APP=run.py
+    ```
+5. Initialize the database:
+    ```
+    flask init-db
+    ```
+6. Run the application:
+    ```
+    python3 run.py
+    ```
 
 ## 🔗 API Endpoints (Overview)
 
