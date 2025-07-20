@@ -39,6 +39,9 @@
                         <input type="checkbox" class="form-check-input" id="checkPwned" name="check_pwned" checked>
                         <label class="form-check-label" for="checkPwned">Check against Pwned Passwords database (may be slow)</label>
                     </div>
+                    <div id="pwnedStatus" class="mb-3 text-danger" style="display:none;">
+                        Pwned Check is disabled. Results will not include Pwned Passwords analysis.
+                    </div>
                     <button type="submit" class="btn btn-primary btn-lg w-100">
                         <i class="material-icons align-middle me-2">search</i>Analyze Passwords
                     </button>
@@ -227,7 +230,7 @@
                                                 <h6 class="card-title">Password Strength</h6>
                                                 <p><strong>zxcvbn Score:</strong> ${zxcvbn.score}/4 (${scoreText})</p>
                                                 <p><strong>Entropy:</strong> ${strength.entropy.toFixed(2)} bits</p>
-                                                <p><strong>Pwned Check:</strong> ${pwned.pwned ? `<span class="text-danger">Pwned ${pwned.pwned_count} times</span>` : '<span class="text-success">Not Pwned</span>'}</p>
+                                                <p><strong>Pwned Check:</strong> ${document.getElementById('checkPwned').checked ? (pwned.pwned ? `<span class="text-danger">Pwned ${pwned.pwned_count} times</span>` : '<span class="text-success">Not Pwned</span>') : 'Disable'}</p>
                                             </div>
                                         </div>
 
@@ -283,6 +286,16 @@
             });
         } catch (error) {
             resultsContainer.innerHTML = `<div class="col-12"><div class="alert alert-danger">${error.message}</div></div>`;
+        }
+    });
+
+    // Add event listener for checkPwned checkbox to toggle pwnedStatus display
+    document.getElementById('checkPwned').addEventListener('change', function() {
+        const pwnedStatus = document.getElementById('pwnedStatus');
+        if (this.checked) {
+            pwnedStatus.style.display = 'none';
+        } else {
+            pwnedStatus.style.display = 'block';
         }
     });
 

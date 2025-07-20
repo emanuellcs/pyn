@@ -4,4 +4,4 @@ __pycache__
 .gitguardian.yaml
 .cache_ggshield
 venv
-.db
+site.db
