@@ -1,0 +1,10 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+    {% for name, hash_val in hashes.items() %}
+    <div class="bg-gray-100 p-4 rounded-lg border border-gray-200">
+        <label class="block text-xs font-semibold {% if 'Insecure' in name %}text-red-500{% else %}text-gray-500{% endif %} uppercase tracking-wide mb-1">{{ name }}</label>
+        <div class="text-sm font-mono text-gray-800 break-all select-all cursor-pointer hover:bg-gray-200 p-1 rounded transition-colors">
+            {{ hash_val }}
+        </div>
+    </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,16 @@
+{% if error %}
+<div class="bg-red-50 p-4 rounded-xl border border-red-200 text-red-600 text-sm font-medium">
+    {{ error }}
+</div>
+{% else %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Header (Algorithm & Token Type)</div>
+        <pre class="font-mono text-sm text-indigo-700 whitespace-pre-wrap overflow-x-auto">{{ header }}</pre>
+    </div>
+    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Payload (Data)</div>
+        <pre class="font-mono text-sm text-emerald-700 whitespace-pre-wrap overflow-x-auto">{{ payload }}</pre>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,7 @@
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 max-h-60 overflow-y-auto">
+    <ul class="space-y-2 font-mono text-sm text-slate-800">
+        {% for uuid in uuids %}
+        <li class="p-2 bg-white border border-slate-100 rounded-lg select-all cursor-pointer hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-100 transition-colors">{{ uuid }}</li>
+        {% endfor %}
+    </ul>
+</div>

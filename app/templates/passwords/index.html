@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold mb-4 border border-slate-200">
+            Password Intelligence
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Generate & Analyze</h1>
+        <p class="text-slate-500 mt-3 text-lg">Create impenetrable passwords or analyze existing ones with zero telemetry.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Generator Section -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <h2 class="text-xl font-bold text-slate-900 mb-6">Generate Password</h2>
+            <form hx-post="/passwords/generate" hx-target="#result-container" class="space-y-6">
+                <div>
+                    <label class="flex justify-between items-center text-sm font-semibold text-slate-700 mb-2">
+                        <span>Length</span>
+                        <span id="length-val" class="bg-slate-100 px-2 py-1 rounded text-slate-900">16</span>
+                    </label>
+                    <input type="range" name="length" min="8" max="64" value="16" oninput="document.getElementById('length-val').innerText = this.value" class="w-full mt-2 accent-indigo-600">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center space-x-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                        <input type="checkbox" name="use_upper" value="on" class="form-checkbox h-5 w-5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked>
+                        <span class="text-sm font-medium text-slate-700">Uppercase</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                        <input type="checkbox" name="use_lower" value="on" class="form-checkbox h-5 w-5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked>
+                        <span class="text-sm font-medium text-slate-700">Lowercase</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                        <input type="checkbox" name="use_digits" value="on" class="form-checkbox h-5 w-5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked>
+                        <span class="text-sm font-medium text-slate-700">Numbers</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                        <input type="checkbox" name="use_special" value="on" class="form-checkbox h-5 w-5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked>
+                        <span class="text-sm font-medium text-slate-700">Symbols</span>
+                    </label>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">
+                    Generate Secure Password <span class="htmx-indicator ml-2">...</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Analysis Input Section -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <h2 class="text-xl font-bold text-slate-900 mb-6">Real-time Analysis</h2>
+            <input type="text" name="password" 
+                   hx-post="/passwords/analyze_input" 
+                   hx-trigger="input changed delay:500ms" 
+                   hx-target="#analysis-container"
+                   placeholder="Type a password to analyze..." 
+                   class="w-full rounded-xl border-slate-200 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 border bg-slate-50 text-lg transition-colors">
+            
+            <div id="analysis-container" class="mt-6">
+                <div class="p-6 border-2 border-dashed border-slate-100 rounded-xl text-center">
+                    <p class="text-slate-400 text-sm font-medium">Type above to see live entropy, crack times, and HIBP checks.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8">
+        <div id="result-container"></div>
+    </div>
+
+    <div class="mt-12 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900">Bulk Analysis (Offline)</h2>
+        </div>
+        <p class="text-slate-500 mb-6 text-sm">Upload a CSV file containing passwords. Processing happens entirely in memory without hitting the disk or network.</p>
+        <form hx-post="/passwords/bulk_analyze" hx-encoding="multipart/form-data" hx-target="#bulk-results" class="flex flex-col sm:flex-row gap-4 items-center">
+            <div class="flex-grow w-full">
+                <input type="file" name="csv_file" accept=".csv" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 transition-colors">
+            </div>
+            <button type="submit" class="w-full sm:w-auto bg-emerald-600 text-white font-semibold py-3 px-8 rounded-xl shadow-sm hover:bg-emerald-700 transition-colors whitespace-nowrap">
+                Analyze CSV <span class="htmx-indicator ml-2">...</span>
+            </button>
+        </form>
+        <div id="bulk-results" class="mt-8"></div>
+    </div>
+</div>
+{% endblock %}

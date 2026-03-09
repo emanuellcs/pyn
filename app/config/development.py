@@ -8,4 +8,4 @@ SECRET_KEY = "dev-key"
 
 # Configures the database URI for SQLAlchemy.
 # This specifies the connection string for the SQLite database used in development.
-SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
+SQLALCHEMY_DATABASE_URI = "sqlite:///site.db"

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="mb-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold mb-4 border border-slate-200">
+            Local Analytics
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Security Dashboard</h1>
+        <p class="text-slate-500 mt-3 text-lg">Metrics on locally analyzed and generated passwords.</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest relative z-10">Total Processed</h3>
+            <p class="text-5xl font-black text-slate-900 mt-4 relative z-10">{{ total_generated }}</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest relative z-10">Average Entropy</h3>
+            <div class="flex items-baseline gap-2 mt-4 relative z-10">
+                <p class="text-5xl font-black text-emerald-600">{{ avg_entropy }}</p>
+                <span class="text-sm font-bold text-emerald-600/50 uppercase">bits</span>
+            </div>
+        </div>
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest relative z-10">Average Zxcvbn Score</h3>
+            <div class="flex items-baseline gap-2 mt-4 relative z-10">
+                <p class="text-5xl font-black text-purple-600">{{ avg_score }}</p>
+                <span class="text-sm font-bold text-purple-600/50 uppercase">/ 4.0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Score Distribution -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 lg:col-span-1">
+            <h2 class="text-xl font-bold text-slate-900 mb-6">Strength Distribution</h2>
+            <div class="space-y-6">
+                {% for score in range(4, -1, -1) %}
+                <div>
+                    <div class="flex justify-between text-sm font-semibold text-slate-700 mb-2">
+                        <span>Score {{ score }} 
+                            {% if score == 4 %}<span class="text-slate-400 font-normal ml-1">(Very Strong)</span>
+                            {% elif score == 3 %}<span class="text-slate-400 font-normal ml-1">(Strong)</span>
+                            {% elif score == 2 %}<span class="text-slate-400 font-normal ml-1">(Good)</span>
+                            {% else %}<span class="text-slate-400 font-normal ml-1">(Weak)</span>{% endif %}
+                        </span>
+                        <span class="text-slate-900 font-bold">{{ score_distribution[score] }}</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        {% set percentage = 0 %}
+                        {% if total_generated > 0 %}
+                            {% set percentage = (score_distribution[score] / total_generated) * 100 %}
+                        {% endif %}
+                        <div class="{% if score >= 3 %}bg-emerald-500{% elif score == 2 %}bg-amber-500{% else %}bg-rose-500{% endif %} h-2 rounded-full transition-all duration-1000" style="width: {{ percentage }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Passwords -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col">
+            <div class="px-8 py-6 border-b border-slate-100">
+                <h2 class="text-xl font-bold text-slate-900">Recent Activity Log</h2>
+            </div>
+            <div class="overflow-x-auto flex-grow rounded-b-2xl">
+                <table class="min-w-full divide-y divide-slate-100 text-sm">
+                    <thead class="bg-slate-50/50">
+                        <tr>
+                            <th scope="col" class="px-8 py-4 text-left font-bold text-slate-400 uppercase tracking-wider text-xs">Time</th>
+                            <th scope="col" class="px-8 py-4 text-left font-bold text-slate-400 uppercase tracking-wider text-xs">Password (Encrypted at Rest)</th>
+                            <th scope="col" class="px-8 py-4 text-left font-bold text-slate-400 uppercase tracking-wider text-xs">Entropy</th>
+                            <th scope="col" class="px-8 py-4 text-left font-bold text-slate-400 uppercase tracking-wider text-xs">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-50">
+                        {% for metric in recent_metrics %}
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="px-8 py-5 whitespace-nowrap text-slate-500 font-medium">
+                                {{ metric.created_at.strftime('%H:%M:%S') if metric.created_at else 'Unknown' }}
+                                <span class="text-slate-400 text-xs ml-1">{{ metric.created_at.strftime('%Y-%m-%d') if metric.created_at else '' }}</span>
+                            </td>
+                            <td class="px-8 py-5 font-mono text-slate-800 break-all max-w-[200px]">
+                                <span class="blur-[4px] hover:blur-none transition-all duration-300 cursor-pointer px-2 py-1 rounded bg-slate-100 hover:bg-transparent" title="Hover to reveal">{{ metric.password }}</span>
+                            </td>
+                            <td class="px-8 py-5 text-slate-700 font-semibold">
+                                {{ metric.entropy | round(1) }}
+                            </td>
+                            <td class="px-8 py-5">
+                                <span class="inline-flex px-2.5 py-1 leading-4 font-bold rounded-full text-xs
+                                    {% if metric.score >= 3 %}bg-emerald-100 text-emerald-700
+                                    {% elif metric.score == 2 %}bg-amber-100 text-amber-700
+                                    {% else %}bg-rose-100 text-rose-700{% endif %}">
+                                    {{ metric.score }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="px-8 py-12 text-center text-slate-400 font-medium">No activity recorded yet. Start generating!</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

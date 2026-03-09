@@ -1,0 +1,28 @@
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-2 text-left font-medium text-gray-500">Password</th>
+                <th class="px-4 py-2 text-left font-medium text-gray-500">Strength</th>
+                <th class="px-4 py-2 text-left font-medium text-gray-500">Score</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for res in results %}
+            <tr>
+                <td class="px-4 py-2 font-mono break-all">{{ res.password }}</td>
+                <td class="px-4 py-2">
+                    <span class="inline-flex px-2 py-1 leading-5 font-semibold rounded-full 
+                        {% if res.strength == 'Weak' %}bg-red-100 text-red-800
+                        {% elif res.strength == 'Good' %}bg-yellow-100 text-yellow-800
+                        {% elif res.strength == 'Strong' %}bg-green-100 text-green-800
+                        {% else %}bg-green-200 text-green-900{% endif %}">
+                        {{ res.strength }}
+                    </span>
+                </td>
+                <td class="px-4 py-2">{{ res.score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

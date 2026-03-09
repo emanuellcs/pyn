@@ -1,0 +1,48 @@
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-emerald-200 relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-slate-900">Generated Password</h3>
+        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full uppercase tracking-wider">Success</span>
+    </div>
+    
+    <div class="relative group">
+        <div id="pwd-display" class="bg-slate-50 p-6 rounded-xl text-2xl font-mono text-center break-all mb-6 border border-slate-100 shadow-inner select-all cursor-pointer hover:bg-slate-100 transition-colors">
+            {{ password }}
+        </div>
+        <button 
+            @click="navigator.clipboard.writeText('{{ password }}'); $el.innerText = 'Copied!'; setTimeout(() => $el.innerText = 'Copy', 2000)"
+            class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur-sm text-slate-600 text-xs font-bold px-2 py-1 rounded-md border border-slate-200 hover:text-indigo-600 hover:border-indigo-200"
+            x-data="{}">
+            Copy
+        </button>
+    </div>
+    
+    <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+        {% set strength_color = 'bg-rose-500' %}
+        {% if analysis.strength == 'Good' %}{% set strength_color = 'bg-amber-500' %}{% endif %}
+        {% if analysis.strength == 'Strong' %}{% set strength_color = 'bg-emerald-400' %}{% endif %}
+        {% if analysis.strength == 'Very Strong' %}{% set strength_color = 'bg-emerald-600' %}{% endif %}
+        
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-bold text-slate-700 uppercase tracking-wider">Strength Score</span>
+            <span class="text-sm font-bold {{ strength_color.replace('bg-', 'text-') }}">{{ analysis.strength }}</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div class="{{ strength_color }} h-2 rounded-full transition-all duration-1000" style="width: {{ (analysis.zxcvbn_analysis.score + 1) * 20 }}%"></div>
+        </div>
+    </div>
+
+    {% include 'passwords/partials/analysis_details.html' %}
+    
+    <div class="mt-6 pt-6 border-t border-slate-100">
+        <button 
+            hx-post="/passwords/hashes" 
+            hx-vals='{"password": {{ password | tojson | safe }}}' 
+            hx-target="#hashes-container" 
+            class="text-sm bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            Generate Hashes (Dev Tools)
+        </button>
+        <div id="hashes-container" class="mt-4"></div>
+    </div>
+</div>

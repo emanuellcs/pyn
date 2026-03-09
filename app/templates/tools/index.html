@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold mb-4 border border-slate-200">
+            Developer Utilities
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Zero-Knowledge Toolkit</h1>
+        <p class="text-slate-500 mt-3 text-lg">Process data locally. Nothing leaves your machine.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- PIN Generator -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 mb-6 text-slate-800">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-xl font-bold">Secure PIN Generator</h2>
+            </div>
+            <form hx-post="/tools/pin" hx-target="#pin-result" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">PIN Length</label>
+                    <select name="length" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 p-3 border">
+                        <option value="4">4 Digits (Standard)</option>
+                        <option value="6">6 Digits (Secure)</option>
+                        <option value="8">8 Digits</option>
+                        <option value="12">12 Digits</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">
+                    Generate PIN
+                </button>
+            </form>
+            <div id="pin-result" class="mt-6"></div>
+        </div>
+
+        <!-- UUID Generator -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 mb-6 text-slate-800">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                </div>
+                <h2 class="text-xl font-bold">UUID Generator</h2>
+            </div>
+            <form hx-post="/tools/uuid" hx-target="#uuid-result" class="space-y-4">
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Version</label>
+                        <select name="version" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 p-3 border">
+                            <option value="4">v4 (Random)</option>
+                            <option value="1">v1 (Time-based)</option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Count</label>
+                        <input type="number" name="count" value="1" min="1" max="100" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 p-3 border">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">
+                    Generate UUIDs
+                </button>
+            </form>
+            <div id="uuid-result" class="mt-6"></div>
+        </div>
+
+        <!-- String Encoder/Decoder -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow lg:col-span-2">
+            <div class="flex items-center gap-3 mb-6 text-slate-800">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                </div>
+                <h2 class="text-xl font-bold">Encoder / Decoder</h2>
+            </div>
+            <form hx-post="/tools/encode" hx-target="#encode-result" class="space-y-4">
+                <textarea name="text" rows="3" placeholder="Enter text to encode or decode..." class="w-full font-mono text-sm rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border bg-slate-50"></textarea>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <select name="method" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border bg-slate-50 font-semibold text-slate-700">
+                        <option value="base64">Base64</option>
+                        <option value="hex">Hexadecimal</option>
+                        <option value="url">URL Encoding</option>
+                    </select>
+                    <select name="action" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border bg-slate-50 font-semibold text-slate-700">
+                        <option value="encode">Encode string</option>
+                        <option value="decode">Decode string</option>
+                    </select>
+                    <button type="submit" class="w-full sm:w-auto px-8 bg-slate-900 text-white font-semibold py-3 rounded-xl shadow-sm hover:bg-slate-800 transition-colors whitespace-nowrap">
+                        Process
+                    </button>
+                </div>
+            </form>
+            <div id="encode-result" class="mt-6"></div>
+        </div>
+
+        <!-- JWT Decoder -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow lg:col-span-2">
+            <div class="flex items-center gap-3 mb-6 text-slate-800">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                </div>
+                <h2 class="text-xl font-bold">JWT Decoder</h2>
+            </div>
+            <form hx-post="/tools/jwt" hx-target="#jwt-result">
+                <textarea name="token" rows="3" placeholder="Paste your eyJ... JWT token here" class="w-full font-mono text-sm rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border bg-slate-50 mb-4 break-all"></textarea>
+                <button type="submit" class="bg-slate-900 text-white font-semibold py-3 px-8 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">
+                    Decode Token
+                </button>
+            </form>
+            <div id="jwt-result" class="mt-6"></div>
+        </div>
+        
+        <!-- JSON Formatter -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow lg:col-span-2">
+            <div class="flex items-center gap-3 mb-6 text-slate-800">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                </div>
+                <h2 class="text-xl font-bold">JSON Formatter / Validator</h2>
+            </div>
+            <form hx-post="/tools/json" hx-target="#json-result">
+                <textarea name="json_input" rows="6" placeholder='{"key": "value"}' class="w-full font-mono text-sm rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-4 border bg-slate-50 mb-4"></textarea>
+                <button type="submit" class="bg-slate-900 text-white font-semibold py-3 px-8 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">
+                    Format JSON
+                </button>
+            </form>
+            <div id="json-result" class="mt-6"></div>
+        </div>
+
+    </div>
+
+    <!-- Hashing Tool -->
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow mt-8">
+        <div class="flex items-center gap-3 mb-6 text-slate-800">
+            <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <h2 class="text-xl font-bold">Real-time Text Hasher</h2>
+        </div>
+        <input type="text" name="text" 
+               hx-post="/tools/hash" 
+               hx-trigger="input changed delay:250ms" 
+               hx-target="#hash-result"
+               placeholder="Type text to generate hashes instantly..." 
+               class="w-full border-slate-200 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 border bg-slate-50 text-lg transition-colors">
+        
+        <div id="hash-result" class="mt-6"></div>
+    </div>
+</div>
+{% endblock %}

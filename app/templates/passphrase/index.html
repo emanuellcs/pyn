@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold mb-4 border border-slate-200">
+            High Entropy
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Generate Passphrase</h1>
+        <p class="text-slate-500 mt-3 text-lg">Create memorable, ultra-secure passphrases using Diceware or Gibberish generators.</p>
+    </div>
+
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+        <form hx-post="/passphrase/generate" hx-target="#passphrase-result" class="space-y-6">
+            <div>
+                <label class="flex justify-between items-center text-sm font-semibold text-slate-700 mb-2">
+                    <span>Word Count</span>
+                    <span id="words-val" class="bg-slate-100 px-2 py-1 rounded text-slate-900">4</span>
+                </label>
+                <input type="range" name="num_words" min="3" max="10" value="4" oninput="document.getElementById('words-val').innerText = this.value" class="w-full mt-2 accent-indigo-600">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Generator Type</label>
+                    <select name="generator_type" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 p-3 border">
+                        <option value="diceware">Diceware (Real words)</option>
+                        <option value="pronounceable">Pronounceable (Gibberish)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Separator</label>
+                    <input type="text" name="separator" value="-" class="block w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 p-3 border">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">
+                Generate Passphrase <span class="htmx-indicator ml-2">...</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="mt-8" id="passphrase-result"></div>
+</div>
+{% endblock %}

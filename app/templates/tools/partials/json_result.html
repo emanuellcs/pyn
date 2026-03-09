@@ -1,0 +1,10 @@
+{% if success %}
+<div class="bg-slate-900 p-4 rounded-xl border border-slate-800 mt-2 relative group">
+    <div class="absolute top-3 right-3 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">Valid JSON</div>
+    <pre class="font-mono text-sm text-slate-300 overflow-x-auto">{{ formatted }}</pre>
+</div>
+{% else %}
+<div class="bg-red-50 p-4 rounded-xl border border-red-200 text-red-600 text-sm font-medium mt-2">
+    <strong>Invalid JSON:</strong> {{ error }}
+</div>
+{% endif %}

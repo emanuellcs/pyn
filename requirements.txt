@@ -4,3 +4,7 @@ zxcvbn
 Flask-WTF
 pytest
 Flask-SQLAlchemy
+cryptography
+argon2-cffi
+bcrypt
+passlib
